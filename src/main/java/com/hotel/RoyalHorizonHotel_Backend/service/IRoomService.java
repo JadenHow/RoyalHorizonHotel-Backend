@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface IRoomService {
-    Room createRoom(List<String> images, String roomType, BigDecimal roomPrice);
+    Room createRoom(String images, String roomType, BigDecimal roomPrice);
 
     List<String> getAllRoomTypes();
 
@@ -17,7 +17,7 @@ public interface IRoomService {
 
     List<Room> getAllRooms();
 
-    Room updateRoom(String roomId, String roomType, BigDecimal roomPrice, List<String> images);
+    Room updateRoom(String roomId, String roomType, BigDecimal roomPrice, String image);
 
     Room deleteRoom(String roomId);
 }

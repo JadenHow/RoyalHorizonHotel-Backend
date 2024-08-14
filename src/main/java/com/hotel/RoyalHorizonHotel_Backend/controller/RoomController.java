@@ -20,11 +20,11 @@ public class RoomController {
     private final RoomService roomService;
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    // @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createRoom(@RequestBody Room room) {
         try {
             validateRoom(room);
-            Room createdRoom = roomService.createRoom(room.getImages(), room.getRoomType(), room.getRoomPrice());
+            Room createdRoom = roomService.createRoom(room.getImage(), room.getRoomType(), room.getRoomPrice());
             return ResponseEntity.status(HttpStatus.CREATED).body(createdRoom);
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getReason());
@@ -46,7 +46,7 @@ public class RoomController {
     }
 
     @DeleteMapping("/{roomId}")
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteRoom(@PathVariable String roomId) {
         try {
             Room deletedRoom = roomService.deleteRoom(roomId);
@@ -61,7 +61,7 @@ public class RoomController {
     public ResponseEntity<?> updateRoom(@PathVariable String roomId, @RequestBody Room room) {
         try {
             validateRoom(room);
-            Room updatedRoom = roomService.updateRoom(roomId, room.getRoomType(), room.getRoomPrice(), room.getImages());
+            Room updatedRoom = roomService.updateRoom(roomId, room.getRoomType(), room.getRoomPrice(), room.getImage());
             return ResponseEntity.ok(updatedRoom);
         } catch (ResponseStatusException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getReason());

@@ -23,9 +23,9 @@ public class RoomService implements IRoomService {
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public Room createRoom(List<String> images, String roomType, BigDecimal roomPrice) {
+    public Room createRoom(String image, String roomType, BigDecimal roomPrice) {
         Room room = new Room();
-        room.setImages(images);
+        room.setImage(image);
         room.setRoomType(roomType);
         room.setRoomPrice(roomPrice);
         return roomRepository.save(room);
@@ -66,13 +66,13 @@ public class RoomService implements IRoomService {
     }
 
     @Override
-    public Room updateRoom(String roomId, String roomType, BigDecimal roomPrice, List<String> images) {
+    public Room updateRoom(String roomId, String roomType, BigDecimal roomPrice, String image) {
         Room room = roomRepository.findById(roomId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found"));
 
-        if (roomType != null) room.setRoomType(roomType);
+        if (roomType != null && !roomType.trim().isEmpty()) room.setRoomType(roomType);
         if (roomPrice != null) room.setRoomPrice(roomPrice);
-        if (images != null) room.setImages(images);
+        if (image != null && !image.trim().isEmpty()) room.setImage(image);
 
         return roomRepository.save(room);
     }

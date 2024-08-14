@@ -1,6 +1,7 @@
 package com.hotel.RoyalHorizonHotel_Backend.controller;
 
 import com.hotel.RoyalHorizonHotel_Backend.model.Role;
+import com.hotel.RoyalHorizonHotel_Backend.model.Room;
 import com.hotel.RoyalHorizonHotel_Backend.model.User;
 import com.hotel.RoyalHorizonHotel_Backend.security.JwtUtils;
 import com.hotel.RoyalHorizonHotel_Backend.service.IUserService;
@@ -16,6 +17,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -26,13 +31,28 @@ public class AuthController {
     private final JwtUtils jwtUtils;
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody @Valid RegisterRequest request) {
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
+
+        List<String> missingFields = validateRegisterUser(request);
+
+        if (!missingFields.isEmpty()) {
+            String missingFieldsString = String.join(", ", missingFields);
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("Missing fields: " + missingFieldsString);
+        }
+
         User user = new User();
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
-        user.setRole(Role.USER);
+
+        if (request.getAdmin() != null && request.getAdmin()) {
+            user.setRole(Role.ADMIN);
+        } else {
+            user.setRole(Role.USER);
+        }
 
         try {
             User userCreated = userService.registerUser(user);
@@ -49,17 +69,35 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
 
-            User user = userService.getUser(request.getEmail());
+            User user = userService.getUserByEmail(request.getEmail());
             String jwtToken = jwtUtils.generateToken(user);
 
             AuthenticationResponse response = new AuthenticationResponse();
             response.setJwt(jwtToken);
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Invalid email or password"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
         } catch (AuthenticationCredentialsNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Authentication credentials not found"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication credentials not found");
         }
+    }
+
+    private static List<String> validateRegisterUser(RegisterRequest request) {
+        List<String> missingFields = new ArrayList<>();
+
+        if (request.getFirstName() == null || request.getFirstName().trim().isEmpty()) {
+            missingFields.add("First Name");
+        }
+        if (request.getLastName() == null || request.getLastName().trim().isEmpty()) {
+            missingFields.add("Last Name");
+        }
+        if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
+            missingFields.add("Email");
+        }
+        if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
+            missingFields.add("Password");
+        }
+        return missingFields;
     }
 
     @Data
@@ -71,6 +109,7 @@ public class AuthController {
         private String lastName;
         private String email;
         private String password;
+        private Boolean admin;
     }
 
     @Data

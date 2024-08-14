@@ -21,7 +21,7 @@ public class Room {
 
     private BigDecimal roomPrice;
 
-    private List<String> images = new ArrayList<>();
+    private String image;
 
     // BookedRoom Ids
     private List<String> bookings = new ArrayList<>();

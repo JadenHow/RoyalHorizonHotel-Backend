@@ -55,7 +55,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public User getUser(String email) {
+    public User getUserByEmail(String email) {
         Query query = new Query();
         query.addCriteria(Criteria.where("email").is(email));
 
@@ -65,5 +65,11 @@ public class UserService implements IUserService {
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
+    }
+
+    @Override
+    public User getUserById(String id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 }

@@ -21,9 +21,19 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @GetMapping("/{email}")
+    @GetMapping("/id/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable String id) {
+        User user = userService.getUserById(id);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found with id: " + id);
+        }
+    }
+
+    @GetMapping("/email/{email}")
     public ResponseEntity<?> getUserByEmail(@PathVariable String email) {
-        User user = userService.getUser(email);
+        User user = userService.getUserByEmail(email);
         if (user != null) {
             return ResponseEntity.ok(user);
         } else {
