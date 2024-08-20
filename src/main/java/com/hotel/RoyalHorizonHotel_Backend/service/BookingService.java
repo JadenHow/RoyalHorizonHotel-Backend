@@ -5,6 +5,7 @@ import com.hotel.RoyalHorizonHotel_Backend.model.Room;
 import com.hotel.RoyalHorizonHotel_Backend.repository.BookingRepository;
 import com.hotel.RoyalHorizonHotel_Backend.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -85,7 +86,7 @@ public class BookingService implements IBookingService {
     @Override
     public BookedRoom findByBookingConfirmationCode(String confirmationCode) {
         Query query = new Query();
-        query.addCriteria(Criteria.where("confirmationCode").is(confirmationCode));
+        query.addCriteria(Criteria.where("bookingConfirmationCode").is(confirmationCode));
 
         return Optional.ofNullable(mongoTemplate.findOne(query, BookedRoom.class))
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No booking found with confirmation code: " + confirmationCode));
@@ -113,6 +114,9 @@ public class BookingService implements IBookingService {
         bookedRoom.setNumOfAdults(bookingRequest.getNumOfAdults());
         bookedRoom.setNumOfChildren(bookingRequest.getNumOfChildren());
         bookedRoom.setRoomId(room.getId());
+
+        String bookingCode = RandomStringUtils.randomNumeric(10);
+        bookedRoom.setBookingConfirmationCode(bookingCode);
         return bookedRoom;
     }
 }

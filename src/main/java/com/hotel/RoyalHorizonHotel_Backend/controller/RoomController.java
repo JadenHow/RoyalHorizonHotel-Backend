@@ -20,7 +20,7 @@ public class RoomController {
     private final RoomService roomService;
 
     @PostMapping
-    // @PreAuthorize("hasRole('ADMIN')")
+     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> createRoom(@RequestBody Room room) {
         try {
             validateRoom(room);
@@ -46,7 +46,7 @@ public class RoomController {
     }
 
     @DeleteMapping("/{roomId}")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteRoom(@PathVariable String roomId) {
         try {
             Room deletedRoom = roomService.deleteRoom(roomId);

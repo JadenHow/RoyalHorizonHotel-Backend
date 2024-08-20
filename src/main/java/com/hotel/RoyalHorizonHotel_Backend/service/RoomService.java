@@ -48,10 +48,10 @@ public class RoomService implements IRoomService {
     @Override
     public List<Room> getAvailableRooms(LocalDate checkInDate, LocalDate checkOutDate, String roomType) {
         Query bookedRoomsQuery = new Query();
-        bookedRoomsQuery.addCriteria(Criteria.where("checkInDate").lte(checkOutDate)
-            .and("checkOutDate").gte(checkInDate));
+        bookedRoomsQuery.addCriteria(Criteria.where("checkInDate").lt(checkOutDate)
+            .and("checkOutDate").gt(checkInDate));
 
-        List<String> bookedRoomIds = mongoTemplate.findDistinct(bookedRoomsQuery, "room.id", BookedRoom.class, String.class);
+        List<String> bookedRoomIds = mongoTemplate.findDistinct(bookedRoomsQuery, "roomId", BookedRoom.class, String.class);
 
         Query availableRoomsQuery = new Query();
         availableRoomsQuery.addCriteria(Criteria.where("roomType").regex(roomType, "i")
