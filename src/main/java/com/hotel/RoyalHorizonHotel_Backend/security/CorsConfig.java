@@ -24,7 +24,7 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+        config.setAllowedOrigins(Collections.singletonList("http://localhost:3000, https://royalhorizonhotel-frontend-s5k2dwd5ma-uc.a.run.app"));
 
         config.setAllowedHeaders(List.of(
                 HttpHeaders.AUTHORIZATION,
